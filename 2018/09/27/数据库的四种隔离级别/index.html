@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="数据库的事务操作其实就是一组原子性的操作，要么全部操作成功，要么全部操作失败。 　　 　　比如说我需要对外销售1张电影票，且登记一下销售信息到另一个表，至少需要以下3个步骤 　　1.查询电影票数量是否满足销售1张电影票 SELECT remain_count FROM cinema WHERE film_id = 123456789; 　　2.更新电影票数量 UPDATE remain_cou">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据库的四种隔离级别">
+<meta property="og:url" content="http://yoursite.com/2018/09/27/数据库的四种隔离级别/index.html">
+<meta property="og:site_name" content="Zhangzj是骏不是俊">
+<meta property="og:description" content="数据库的事务操作其实就是一组原子性的操作，要么全部操作成功，要么全部操作失败。 　　 　　比如说我需要对外销售1张电影票，且登记一下销售信息到另一个表，至少需要以下3个步骤 　　1.查询电影票数量是否满足销售1张电影票 SELECT remain_count FROM cinema WHERE film_id = 123456789; 　　2.更新电影票数量 UPDATE remain_cou">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-09-27T06:23:10.207Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据库的四种隔离级别">
+<meta name="twitter:description" content="数据库的事务操作其实就是一组原子性的操作，要么全部操作成功，要么全部操作失败。 　　 　　比如说我需要对外销售1张电影票，且登记一下销售信息到另一个表，至少需要以下3个步骤 　　1.查询电影票数量是否满足销售1张电影票 SELECT remain_count FROM cinema WHERE film_id = 123456789; 　　2.更新电影票数量 UPDATE remain_cou">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>数据库的四种隔离级别</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- persian styles -->
+    
+      <link rel="stylesheet" href="/css/rtl.css">
+    
+    <!-- rss -->
+    
+    
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" class="active" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" class="active" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu" style="visibility: visible;">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">HOME</a></li>
+         
+          <li><a href="/About/">About</a></li>
+         
+          <li><a href="/archives/">Articles</a></li>
+         
+          <li><a href="/projects_url">Projectes</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" href="/2018/09/10/java三种工厂模式/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Post Anterior</span>
+      <span id="i-next" class="info" style="display:none;">Post Següent</span>
+      <span id="i-top" class="info" style="display:none;">Adalt</span>
+      <span id="i-share" class="info" style="display:none;">Compartir Post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2018/09/27/数据库的四种隔离级别/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2018/09/27/数据库的四种隔离级别/&text=数据库的四种隔离级别"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2018/09/27/数据库的四种隔离级别/&title=数据库的四种隔离级别"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2018/09/27/数据库的四种隔离级别/&is_video=false&description=数据库的四种隔离级别"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=数据库的四种隔离级别&body=Check out this article: http://yoursite.com/2018/09/27/数据库的四种隔离级别/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2018/09/27/数据库的四种隔离级别/&title=数据库的四种隔离级别"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2018/09/27/数据库的四种隔离级别/&title=数据库的四种隔离级别"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2018/09/27/数据库的四种隔离级别/&title=数据库的四种隔离级别"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2018/09/27/数据库的四种隔离级别/&title=数据库的四种隔离级别"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2018/09/27/数据库的四种隔离级别/&name=数据库的四种隔离级别&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index my4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        数据库的四种隔离级别
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Zhangzj是骏不是俊</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2018-09-27T06:22:20.000Z" itemprop="datePublished">2018-09-27</time>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>　　数据库的事务操作其实就是一组原子性的操作，要么全部操作成功，要么全部操作失败。</p>
+<p>　　</p>
+<p>　　比如说我需要对外销售1张电影票，且登记一下销售信息到另一个表，至少需要以下3个步骤</p>
+<p>　　1.查询电影票数量是否满足销售1张电影票 SELECT remain_count FROM cinema WHERE film_id = 123456789;</p>
+<p>　　2.更新电影票数量 UPDATE remain_count = remain_count -1 FROM cinema WHERE film_id=123456789;</p>
+<p>　　3.插入销售信息   INSERT  INTO sell_mes(id ,mes) values(id,mes);</p>
+<p>　　试想一下如果我们其中的一步被出错了或者被其他操作打乱就很容易出现问题。比如说有两个销售系统A,B在销售同样的票，此时票只剩下1张，A接到订单要售出一张票，他查看电影票的数量大于1，于是要售出的时候，也就是在第一步执行完毕执行第二步的时候，B也接到订单，也看到余票大于1，B也要售出1张票。此时就出现了余票只有1张却售出两张的荒唐的情况出现。</p>
+<p>　　所以一个良好的系统是需要通过ACID测试，至于ACID是什么，就自行百度吧，这篇博文讲的是隔离性的隔离级别以及例子</p>
+<p>　　而事务的隔离级别有四种，隔离级别高的数据库的可靠性高，但并发量低，而隔离级别低的数据库可靠性低，但并发量高，系统开销小</p>
+<p>　　</p>
+<p>　　1.READ UNCIMMITTED（未提交读）</p>
+<p>　　事务中的修改，即使没有提交，其他事务也可以看得到，比如说上面的两步这种现象就叫做脏读，这种隔离级别会引起很多问题，如无必要，不要随便使用</p>
+<p>　　例子:还是售票系统，小明和小花是售票员，他们分别是两个不同窗口的员工，现在售票系统只剩下3张票，此时A来小华这里买3张票，B来小明买票，小华查到余票还有就给接了订单，就要执行第三步的时候，小明接到B的请求查询有没有余票。看到小华卖出了3张票，于是拒绝卖票。但是小华系统出了问题，第三步执行失败，数据库为保证原子性，数据进行了回滚，也就是说一张票都没卖出去。</p>
+<p>　　总结:这就是事务还没提交，而别的事务可以看到他其中修改的数据的后果，也就是脏读。</p>
+<p>　　</p>
+<p>　　2.READ COMMITTED（提交读）</p>
+<p>　　大多数数据库系统的默认隔离级别是READ COMMITTED，这种隔离级别就是一个事务的开始，只能看到已经完成的事务的结果，正在执行的，是无法被其他事务看到的。这种级别会出现读取旧数据的现象</p>
+<p>　　例子:还是小明小华销售员，余票3张，A来小华那里请求3张订票单，小华接受订单，要卖出3张票，上面的销售步骤执行中的时候，B也来小明那里买票，由于小华的销售事务执行到一半，小明事务没有看到小华的事务执行，读到的票数是3，准备接受订单的时候，小华的销售事务完成了，此时小明的系统变成显示0张票，小明刚想按下鼠标点击接受订单的手又连忙缩了回去。</p>
+<p>　　总结:这就是小华的事务执行到一半，而小明看不到他执行的操作，所以看到的是旧数据，也就是无效的数据</p>
+<p>　　3.REPEATABLE READ（可重复读）</p>
+<p> 　　REPEATABLE READ解决了脏读的问题，该级别保证了每行的记录的结果是一致的，也就是上面说的读了旧数据的问题，但是却无法解决另一个问题，幻行，顾名思义就是突然蹦出来的行数据。指的就是某个事务在读取某个范围的数据，但是另一个事务又向这个范围的数据去插入数据，导致多次读取的时候，数据的行数不一致。</p>
+<p>　　例子:销售部门有规定，如果销售记录低于规定的值，要扣工资，此时经理在后端控制台查看了一下小明的销售记录，发现销售记录达不到规定的次数，心里暗喜，准备打印好销售清单，理直气壮和小明提出，没想到打印出来的时候发现销售清单里面销售数量增多了几条，刚刚好达到要求，气的经理撕了清单纸。原来是小明在就要打印的瞬间卖出了几张票，因此避过了减工资的血光之灾。</p>
+<p>　　总结:虽然读取同一条数据可以保证一致性，但是却不能保证没有插入新的数据</p>
+<p>　　4.SERIALIZABLE（可串行化）</p>
+<p>　　SERIALIZABLE是最高的隔离级别，它通过强制事务串行执行（注意是串行），避免了前面的幻读情况，由于他大量加上锁，导致大量的请求超时，因此性能会比较底下，再特别需要数据一致性且并发量不需要那么大的时候才可能考虑这个隔离级别</p>
+
+  </div>
+</article>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">HOME</a></li>
+         
+          <li><a href="/About/">About</a></li>
+         
+          <li><a href="/archives/">Articles</a></li>
+         
+          <li><a href="/projects_url">Projectes</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2018/09/27/数据库的四种隔离级别/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2018/09/27/数据库的四种隔离级别/&text=数据库的四种隔离级别"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2018/09/27/数据库的四种隔离级别/&title=数据库的四种隔离级别"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2018/09/27/数据库的四种隔离级别/&is_video=false&description=数据库的四种隔离级别"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=数据库的四种隔离级别&body=Check out this article: http://yoursite.com/2018/09/27/数据库的四种隔离级别/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2018/09/27/数据库的四种隔离级别/&title=数据库的四种隔离级别"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2018/09/27/数据库的四种隔离级别/&title=数据库的四种隔离级别"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2018/09/27/数据库的四种隔离级别/&title=数据库的四种隔离级别"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2018/09/27/数据库的四种隔离级别/&title=数据库的四种隔离级别"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2018/09/27/数据库的四种隔离级别/&name=数据库的四种隔离级别&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menú</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Compartir</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Cap amunt</a>
+    </div>
+
+  </div>
+</div>
+
+    
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2018 Zhanzj
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">HOME</a></li>
+         
+          <li><a href="/About/">About</a></li>
+         
+          <li><a href="/archives/">Articles</a></li>
+         
+          <li><a href="/projects_url">Projectes</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+
